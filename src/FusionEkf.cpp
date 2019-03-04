@@ -51,8 +51,10 @@ FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
 
     switch (measurement_pack.sensor_type) {
       case MeasurementPackage::RADAR:
-        // TODO: Convert radar from polar to cartesian coordinates 
-        //         and initialize state.
+        x << measurement_pack.raw_measurements(0) * std::sin(measurement_pack.raw_measurements(1)),
+             measurement_pack.raw_measurements(0) * std::cos(measurement_pack.raw_measurements(1)),
+             0,
+             0;
         break;
       case MeasurementPackage::LASER:
         x << measurement_pack.raw_measurements(0),
