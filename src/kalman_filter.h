@@ -5,15 +5,14 @@
 
 class KalmanFilter {
  public:
-  /**
-   * Constructor
-   */
-  KalmanFilter();
+  KalmanFilter() = default;
+  virtual ~KalmanFilter() = default;
 
-  /**
-   * Destructor
-   */
-  virtual ~KalmanFilter();
+  // By default this class is copyable and movable.
+  KalmanFilter(const KalmanFilter&) = default;
+  KalmanFilter(KalmanFilter&&) = default;
+  KalmanFilter& operator=(const KalmanFilter&) = default;
+  KalmanFilter& operator=(KalmanFilter&&) = default;
 
   /**
    * Init Initializes Kalman filter
@@ -46,6 +45,14 @@ class KalmanFilter {
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
+  const Eigen::VectorXd x() const { return x_; }
+  const Eigen::MatrixXd P() const { return P_; }
+  const Eigen::MatrixXd F() const { return F_; }
+  const Eigen::MatrixXd Q() const { return Q_; }
+  const Eigen::MatrixXd H() const { return H_; }
+  const Eigen::MatrixXd R() const { return R_; }
+
+private:
   // state vector
   Eigen::VectorXd x_;
 

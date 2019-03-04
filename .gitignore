@@ -36,3 +36,5 @@ tests/Makefile
 tests/CMakeFiles/*
 tests/CMakeCache.txt
 tests/cmake_install.cmake
+tests/lib*
+tests/*_test
