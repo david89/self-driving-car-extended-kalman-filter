@@ -20,16 +20,15 @@ class KalmanFilter {
    * @param P_in Initial state covariance
    * @param H_in Measurement matrix
    * @param R_in Measurement covariance matrix
-   * @param Q_in Process covariance matrix
    */
   void Init(Eigen::VectorXd& x_in, Eigen::MatrixXd& P_in, Eigen::MatrixXd& H_in,
-            Eigen::MatrixXd& R_in, Eigen::MatrixXd& Q_in);
+            Eigen::MatrixXd& R_in);
 
   /**
    * Prediction Predicts the state and the state covariance
    * using the process model
    */
-  void Predict(const Eigen::MatrixXd& F);
+  void Predict(const Eigen::MatrixXd& F, const Eigen::MatrixXd& Q);
 
   /**
    * Updates the state by using standard Kalman Filter equations
@@ -52,9 +51,6 @@ private:
 
   // state covariance matrix
   Eigen::MatrixXd P_;
-
-  // process covariance matrix
-  Eigen::MatrixXd Q_;
 
   // measurement matrix
   Eigen::MatrixXd H_;

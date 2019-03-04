@@ -23,17 +23,16 @@ float normalizeAngle(float angle) {
  */
 
 void KalmanFilter::Init(VectorXd& x_in, MatrixXd& P_in, MatrixXd& H_in,
-                        MatrixXd& R_in, MatrixXd& Q_in) {
+                        MatrixXd& R_in) {
   x_ = x_in;
   P_ = P_in;
   H_ = H_in;
   R_ = R_in;
-  Q_ = Q_in;
 }
 
-void KalmanFilter::Predict(const MatrixXd& F) {
+void KalmanFilter::Predict(const MatrixXd& F, const MatrixXd& Q) {
   x_ = F * x_;
-  P_ = F * P_ * F.transpose() + Q_;
+  P_ = F * P_ * F.transpose() + Q;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
