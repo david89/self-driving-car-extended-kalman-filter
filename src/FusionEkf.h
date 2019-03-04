@@ -25,9 +25,10 @@ class FusionEkf {
   /**
    * Run the whole flow of the Kalman Filter from here.
    */
-  void ProcessMeasurement(const MeasurementPackage &measurement_pack);
+  const Eigen::VectorXd&
+  ProcessMeasurement(const MeasurementPackage& measurement_pack);
 
- private:
+private:
   // previous timestamp
   long long previous_timestamp_;
 

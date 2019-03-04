@@ -38,7 +38,8 @@ FusionEkf::FusionEkf() {
               0, 0, 0.09;
 }
 
-void FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
+const VectorXd&
+FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
   /**
    * Initialization
    */
@@ -80,7 +81,7 @@ void FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
     ekf_.reset(new KalmanFilter(std::move(x), std::move(P), std::move(H)));
 
     // done initializing, no need to predict or update
-    return;
+    return ekf_->x();
   }
 
   float dt = (measurement_pack.timestamp - previous_timestamp_) / 1000000.0;
@@ -115,4 +116,5 @@ void FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
   // print the output
   cout << "x_ = " << ekf_->x() << endl;
   cout << "P_ = " << ekf_->P() << endl;
+  return ekf_->x();
 }
