@@ -66,4 +66,54 @@ TEST(KalmanFilter, KalmanFilterPrediction) {
   EXPECT_TRUE(result_P.isApprox(expected_P, 1e-6));
 }
 
+TEST(KalmanFilter, KalmanFilterUpdate) {
+  VectorXd x(2);
+  x << 1, 1;
+
+  MatrixXd P(2, 2);
+  P << 1000, 0,
+       0, 1000;
+
+  MatrixXd F(2, 2);
+  F << 1, 1,
+       0, 1;
+
+  MatrixXd H(1, 2);
+  H << 1, 0;
+
+  MatrixXd R(1, 1);
+  R << 0.5;
+
+  MatrixXd Q(2, 2);
+  Q << 0, 0,
+       0, 0;
+
+  VectorXd z(1);
+  z << 2;
+
+  KalmanFilter kf;
+  kf.Init(x, P, F, H, R, Q);
+  kf.Update(z);
+
+  // x' = x + K * y, where
+  // K = P * transpose(H) * inverse(S),
+  // S = H * P * transpose(H) + R
+  // y = z - H * x
+  VectorXd result_x = kf.x();
+
+  VectorXd expected_x(2);
+  expected_x << 1.9995, 1;
+
+  EXPECT_TRUE(result_x.isApprox(expected_x, 1e-6));
+
+  // P' = (I - K * H) * P.
+  MatrixXd result_P = kf.P();
+
+  MatrixXd expected_P(2, 2);
+  expected_P << 0.5, 0,
+                0, 1000;
+
+  EXPECT_TRUE(result_P.isApprox(expected_P, 1e-6));
+}
+
 }  // namespace

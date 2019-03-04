@@ -47,10 +47,6 @@ class KalmanFilter {
 
   const Eigen::VectorXd x() const { return x_; }
   const Eigen::MatrixXd P() const { return P_; }
-  const Eigen::MatrixXd F() const { return F_; }
-  const Eigen::MatrixXd Q() const { return Q_; }
-  const Eigen::MatrixXd H() const { return H_; }
-  const Eigen::MatrixXd R() const { return R_; }
 
 private:
   // state vector
