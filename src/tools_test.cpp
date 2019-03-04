@@ -54,4 +54,19 @@ TEST(Tools, CalculateRmseWhenDifferentSizes) {
                std::invalid_argument);
 }
 
+TEST(Tools, CalculateJacobian) {
+  VectorXd x_state = getVector({1, 2, 0.2, 0.4});
+  MatrixXd expected(3, 4);
+  expected << 0.447214, 0.894427, 0, 0, -0.4, 0.2, 0, 0, 0, 0, 0.447214,
+      0.894427;
+
+  MatrixXd result = tools::CalculateJacobian(x_state);
+  EXPECT_TRUE(expected.isApprox(result, 1e-6));
+}
+
+TEST(Tools, CalculateJacobianDivisionByZero) {
+  VectorXd x_state = getVector({0, 0, 0.2, 0.4});
+  EXPECT_THROW(tools::CalculateJacobian(x_state), std::invalid_argument);
+}
+
 }  // namespace
