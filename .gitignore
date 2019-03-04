@@ -22,3 +22,17 @@ xcuserdata/
 *.xcscmblueprint
 ide_profiles/xcode/Debug/
 ide_profiles/xcode/ExtendedKF.build/
+
+default.profraw
+ExtendedKF
+
+Makefile
+CMakeFiles/*
+CMakeCache.txt
+cmake_install.cmake
+
+# Ignore test binaries and configs
+tests/Makefile
+tests/CMakeFiles/*
+tests/CMakeCache.txt
+tests/cmake_install.cmake

@@ -18,6 +18,14 @@ link_directories(/usr/local/lib)
 link_directories(/usr/local/opt/openssl/lib)
 link_directories(/usr/local/Cellar/libuv/1*/lib)
 
+  # For users with a custom homebrew installation.
+  # TODO: Find a better way.
+  if(EXISTS "$ENV{HOME}/homebrew")
+    include_directories($ENV{HOME}/homebrew/opt/openssl/include)
+    link_directories($ENV{HOME}/homebrew/opt/openssl/lib/)
+    link_directories($ENV{HOME}/homebrew/Cellar/libuv/1*/lib)
+  endif()
+
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
 
