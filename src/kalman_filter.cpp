@@ -41,7 +41,7 @@ void KalmanFilter::UpdateEkf(const VectorXd &z, const MatrixXd& R) {
   float nor = sqrt(px * px + py * py);
 
   if (abs(px) < 1e-9) {
-    throw std::invalid_argument("px cannot be 0.");
+    return;
   }
 
   VectorXd h(3);
