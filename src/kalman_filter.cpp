@@ -17,15 +17,10 @@ float normalizeAngle(float angle) {
 }
 }  // namespace
 
-/* 
- * Please note that the Eigen library does not initialize 
- *   VectorXd or MatrixXd objects with zeros upon creation.
- */
-
-void KalmanFilter::Init(VectorXd& x_in, MatrixXd& P_in, MatrixXd& H_in) {
-  x_ = x_in;
-  P_ = P_in;
-  H_ = H_in;
+KalmanFilter::KalmanFilter(VectorXd x, MatrixXd P, MatrixXd H) {
+  x_ = std::move(x);
+  P_ = std::move(P);
+  H_ = std::move(H);
 }
 
 void KalmanFilter::Predict(const MatrixXd& F, const MatrixXd& Q) {
