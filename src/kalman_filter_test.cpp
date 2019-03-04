@@ -41,8 +41,8 @@ TEST(KalmanFilter, KalmanFilterPrediction) {
        1, 1, 1, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, F, H, R, Q);
-  kf.Predict();
+  kf.Init(x, P, H, R, Q);
+  kf.Predict(F);
 
   // x' = F * x
   // And considering the way F is set up, x' will be the sum of the suffixes of:
@@ -74,10 +74,6 @@ TEST(KalmanFilter, KalmanFilterUpdate) {
   P << 1000, 0,
        0, 1000;
 
-  MatrixXd F(2, 2);
-  F << 1, 1,
-       0, 1;
-
   MatrixXd H(1, 2);
   H << 1, 0;
 
@@ -92,7 +88,7 @@ TEST(KalmanFilter, KalmanFilterUpdate) {
   z << 2;
 
   KalmanFilter kf;
-  kf.Init(x, P, F, H, R, Q);
+  kf.Init(x, P, H, R, Q);
   kf.Update(z);
 
   // x' = x + K * y, where
@@ -126,12 +122,6 @@ TEST(KalmanFilter, KalmanFilterUpdateEkf) {
        0, 0, 1000, 0,
        0, 0, 0, 1000;
 
-  MatrixXd F(4, 4);
-  F << 1, 1, 1, 1,
-       0, 1, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 0, 1;
-
   MatrixXd H(2, 4);
   H << 1, 0, 0, 0,
        0, 1, 0, 0;
@@ -151,7 +141,7 @@ TEST(KalmanFilter, KalmanFilterUpdateEkf) {
   z << 2.8284, 0.7853, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, F, H, R, Q);
+  kf.Init(x, P, H, R, Q);
   kf.UpdateEkf(z);
 
   // x' = x + K * y, where
@@ -188,12 +178,6 @@ TEST(KalmanFilter, KalmanFilterUpdateEkfThrowWhenZeroPx) {
        0, 0, 1000, 0,
        0, 0, 0, 1000;
 
-  MatrixXd F(4, 4);
-  F << 1, 1, 1, 1,
-       0, 1, 1, 1,
-       0, 0, 1, 1,
-       0, 0, 0, 1;
-
   MatrixXd H(2, 4);
   H << 1, 0, 0, 0,
        0, 1, 0, 0;
@@ -213,7 +197,7 @@ TEST(KalmanFilter, KalmanFilterUpdateEkfThrowWhenZeroPx) {
   z << 2.8284, 0.7853, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, F, H, R, Q);
+  kf.Init(x, P, H, R, Q);
   EXPECT_THROW(kf.UpdateEkf(z), std::invalid_argument);
 }
 }  // namespace
