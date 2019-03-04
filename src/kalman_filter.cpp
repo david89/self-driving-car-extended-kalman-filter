@@ -1,8 +1,21 @@
 #include "kalman_filter.h"
+
+#include <cmath>
+#include "tools.h"
 #include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+
+namespace {
+const double kPi = 4.0 * std::atan(1.0);
+
+float normalizeAngle(float angle) {
+  while (angle > kPi) angle -= 2 * kPi;
+  while (angle < -kPi) angle += 2 * kPi;
+  return angle;
+}
+}  // namespace
 
 /* 
  * Please note that the Eigen library does not initialize 
@@ -36,8 +49,30 @@ void KalmanFilter::Update(const VectorXd &z) {
   P_ = (I - K * H_) * P_;
 }
 
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-   * TODO: update the state by using Extended Kalman Filter equations
-   */
+void KalmanFilter::UpdateEkf(const VectorXd &z) {
+  float px = x_(0);
+  float py = x_(1);
+  float vx = x_(2);
+  float vy = x_(3);
+  float nor = sqrt(px * px + py * py);
+
+  if (abs(px) < 1e-9) {
+    throw std::invalid_argument("px cannot be 0.");
+  }
+
+  VectorXd h(3);
+  h << nor, std::atan2(py, px), (px * vx + py * vy) / nor;
+
+  VectorXd y = z - h;
+  // The angle needs to be normalized after any addition/substraction.
+  y(1) = normalizeAngle(y(1));
+
+  MatrixXd Hj = tools::CalculateJacobian(x_);
+  MatrixXd Hjt = Hj.transpose();
+  MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
+  MatrixXd S = Hj * P_ * Hjt + R_;
+  MatrixXd K = P_ * Hjt * S.inverse();
+
+  x_ = x_ + (K * y);
+  P_ = (I - K * Hj) * P_;
 }

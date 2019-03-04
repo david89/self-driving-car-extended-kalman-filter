@@ -57,8 +57,9 @@ TEST(Tools, CalculateRmseWhenDifferentSizes) {
 TEST(Tools, CalculateJacobian) {
   VectorXd x_state = getVector({1, 2, 0.2, 0.4});
   MatrixXd expected(3, 4);
-  expected << 0.447214, 0.894427, 0, 0, -0.4, 0.2, 0, 0, 0, 0, 0.447214,
-      0.894427;
+  expected << 0.447214, 0.894427, 0, 0,
+              -0.4, 0.2, 0, 0,
+              0, 0, 0.447214, 0.894427;
 
   MatrixXd result = tools::CalculateJacobian(x_state);
   EXPECT_TRUE(expected.isApprox(result, 1e-6));

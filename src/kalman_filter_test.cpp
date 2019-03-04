@@ -116,4 +116,66 @@ TEST(KalmanFilter, KalmanFilterUpdate) {
   EXPECT_TRUE(result_P.isApprox(expected_P, 1e-6));
 }
 
+TEST(KalmanFilter, KalmanFilterUpdateEkf) {
+  VectorXd x(4);
+  x << 1, 1, 1, 1;
+
+  MatrixXd P(4, 4);
+  P << 1, 0, 0, 0,
+       0, 1, 0, 0,
+       0, 0, 1000, 0,
+       0, 0, 0, 1000;
+
+  MatrixXd F(4, 4);
+  F << 1, 1, 1, 1,
+       0, 1, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 0, 1;
+
+  MatrixXd H(2, 4);
+  H << 1, 0, 0, 0,
+       0, 1, 0, 0;
+
+  MatrixXd R(3, 3);
+  R << 0.5, 0, 0,
+       0, 0.5, 0,
+       0, 0, 0.5;
+
+  MatrixXd Q(4, 4);
+  Q << 1, 1, 1, 1,
+       1, 1, 1, 1,
+       1, 1, 1, 1,
+       1, 1, 1, 1;
+
+  VectorXd z(3);
+  z << 2.8284, 0.7853, 1;
+
+  KalmanFilter kf;
+  kf.Init(x, P, F, H, R, Q);
+  kf.UpdateEkf(z);
+
+  // x' = x + K * y, where
+  // K = P * transpose(Hj) * inverse(S),
+  // S = Hj * P * transpose(Hj) + R
+  // Hj = Jacobian(x)
+  // y = z - h(x)
+  VectorXd result_x = kf.x();
+
+  VectorXd expected_x(4);
+  expected_x << 1.666703, 1.666605, 0.707253, 0.707253;
+
+  EXPECT_TRUE(result_x.isApprox(expected_x, 1e-6));
+
+  // P' = (I - K * Hj) * P.
+  MatrixXd result_P = kf.P();
+
+  MatrixXd expected_P(4, 4);
+  expected_P << 0.416667, -0.083333, 0.000000, 0.000000,
+                -0.083333, 0.416667, 0.000000, 0.000000,
+                0.000000, 0.000000, 500.249875, -499.750125,
+                0.000000, 0.000000, -499.750125, 500.249875;
+
+  EXPECT_TRUE(result_P.isApprox(expected_P, 1e-6));
+}
+
 }  // namespace
