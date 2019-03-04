@@ -38,9 +38,9 @@ int main() {
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&fusionEkf,&estimations,&ground_truth]
-              (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
-               uWS::OpCode opCode) {
+  h.onMessage([&fusionEkf, &estimations,
+               &ground_truth](uWS::WebSocket<uWS::SERVER> ws, char* data,
+                              size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -51,14 +51,14 @@ int main() {
         auto j = json::parse(s);
 
         string event = j[0].get<string>();
-        
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
           string sensor_measurement = j[1]["sensor_measurement"];
-          
+
           MeasurementPackage meas_package;
           std::istringstream iss(sensor_measurement);
-          
+
           long long timestamp;
 
           // reads first element from the current line
@@ -84,7 +84,7 @@ int main() {
             iss >> ro;
             iss >> theta;
             iss >> ro_dot;
-            meas_package.raw_measurements << ro,theta, ro_dot;
+            meas_package.raw_measurements << ro, theta, ro_dot;
             iss >> timestamp;
             meas_package.timestamp = timestamp;
           }
@@ -100,15 +100,15 @@ int main() {
 
           VectorXd gt_values(4);
           gt_values(0) = x_gt;
-          gt_values(1) = y_gt; 
+          gt_values(1) = y_gt;
           gt_values(2) = vx_gt;
           gt_values(3) = vy_gt;
           ground_truth.push_back(gt_values);
-          
+
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          // Push the current estimated x,y positon from the Kalman filter's 
+          // Push the current estimated x,y positon from the Kalman filter's
           //   state vector
-          VectorXd estimate = fusionEkf.ProcessMeasurement(meas_package);       
+          VectorXd estimate = fusionEkf.ProcessMeasurement(meas_package);
           double p_x = estimate(0);
           double p_y = estimate(1);
           estimations.push_back(std::move(estimate));
@@ -118,30 +118,29 @@ int main() {
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
-          msgJson["rmse_x"] =  rmse(0);
-          msgJson["rmse_y"] =  rmse(1);
+          msgJson["rmse_x"] = rmse(0);
+          msgJson["rmse_y"] = rmse(1);
           msgJson["rmse_vx"] = rmse(2);
           msgJson["rmse_vy"] = rmse(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 
-        }  // end "telemetry" if
+        } // end "telemetry" if
 
       } else {
         string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
-    }  // end websocket message if
-
+    } // end websocket message if
   }); // end h.onMessage
 
   h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
     std::cout << "Connected!!!" << std::endl;
   });
 
-  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, 
-                         char *message, size_t length) {
+  h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code,
+                         char* message, size_t length) {
     ws.close();
     std::cout << "Disconnected" << std::endl;
   });
@@ -153,6 +152,6 @@ int main() {
     std::cerr << "Failed to listen to port" << std::endl;
     return -1;
   }
-  
+
   h.run();
 }
