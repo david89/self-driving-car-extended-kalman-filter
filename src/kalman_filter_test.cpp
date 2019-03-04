@@ -178,4 +178,42 @@ TEST(KalmanFilter, KalmanFilterUpdateEkf) {
   EXPECT_TRUE(result_P.isApprox(expected_P, 1e-6));
 }
 
+TEST(KalmanFilter, KalmanFilterUpdateEkfThrowWhenZeroPx) {
+  VectorXd x(4);
+  x << 0, 1, 1, 1;
+
+  MatrixXd P(4, 4);
+  P << 1, 0, 0, 0,
+       0, 1, 0, 0,
+       0, 0, 1000, 0,
+       0, 0, 0, 1000;
+
+  MatrixXd F(4, 4);
+  F << 1, 1, 1, 1,
+       0, 1, 1, 1,
+       0, 0, 1, 1,
+       0, 0, 0, 1;
+
+  MatrixXd H(2, 4);
+  H << 1, 0, 0, 0,
+       0, 1, 0, 0;
+
+  MatrixXd R(3, 3);
+  R << 0.5, 0, 0,
+       0, 0.5, 0,
+       0, 0, 0.5;
+
+  MatrixXd Q(4, 4);
+  Q << 1, 1, 1, 1,
+       1, 1, 1, 1,
+       1, 1, 1, 1,
+       1, 1, 1, 1;
+
+  VectorXd z(3);
+  z << 2.8284, 0.7853, 1;
+
+  KalmanFilter kf;
+  kf.Init(x, P, F, H, R, Q);
+  EXPECT_THROW(kf.UpdateEkf(z), std::invalid_argument);
+}
 }  // namespace
