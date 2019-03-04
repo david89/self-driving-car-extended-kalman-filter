@@ -2,7 +2,7 @@
 #include <uWS/uWS.h>
 #include <iostream>
 #include "json.hpp"
-#include "FusionEKF.h"
+#include "FusionEkf.h"
 #include "tools.h"
 
 using Eigen::MatrixXd;
