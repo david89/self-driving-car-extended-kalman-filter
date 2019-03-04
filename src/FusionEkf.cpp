@@ -1,6 +1,7 @@
 #include "FusionEkf.h"
 
 #include <iostream>
+#include <memory>
 #include "Eigen/Dense"
 #include "tools.h"
 
@@ -76,7 +77,8 @@ FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
     H << 1, 0, 0, 0,
          0, 1, 0, 0;
 
-    ekf_.reset(new KalmanFilter(std::move(x), std::move(P), std::move(H)));
+    ekf_ = std::make_unique<KalmanFilter>(std::move(x), std::move(P),
+                                          std::move(H));
 
     // done initializing, no need to predict or update
     return ekf_->x();
