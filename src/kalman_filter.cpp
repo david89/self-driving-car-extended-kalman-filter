@@ -34,15 +34,8 @@ void KalmanFilter::Predict(const MatrixXd& F, const MatrixXd& Q) {
 }
 
 void KalmanFilter::Update(const VectorXd &z, const MatrixXd& R) {
-  MatrixXd Ht = H_.transpose();
-  MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
-
   VectorXd y = z - H_ * x_;
-  MatrixXd S = H_ * P_ * Ht + R;
-  MatrixXd K = P_ * Ht * S.inverse();
-
-  x_ = x_ + (K * y);
-  P_ = (I - K * H_) * P_;
+  UpdateImpl(y, R, H_);
 }
 
 void KalmanFilter::UpdateEkf(const VectorXd &z, const MatrixXd& R) {
@@ -58,17 +51,21 @@ void KalmanFilter::UpdateEkf(const VectorXd &z, const MatrixXd& R) {
 
   VectorXd h(3);
   h << nor, std::atan2(py, px), (px * vx + py * vy) / nor;
-
   VectorXd y = z - h;
   // The angle needs to be normalized after any addition/substraction.
   y(1) = normalizeAngle(y(1));
-
   MatrixXd Hj = tools::CalculateJacobian(x_);
-  MatrixXd Hjt = Hj.transpose();
+
+  UpdateImpl(y, R, Hj);
+}
+
+void KalmanFilter::UpdateImpl(const VectorXd& y, const MatrixXd& R,
+                              const MatrixXd& H) {
+  MatrixXd Ht = H.transpose();
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
-  MatrixXd S = Hj * P_ * Hjt + R;
-  MatrixXd K = P_ * Hjt * S.inverse();
+  MatrixXd S = H * P_ * Ht + R;
+  MatrixXd K = P_ * Ht * S.inverse();
 
   x_ = x_ + (K * y);
-  P_ = (I - K * Hj) * P_;
+  P_ = (I - K * H) * P_;
 }

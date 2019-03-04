@@ -45,6 +45,11 @@ class KalmanFilter {
   const Eigen::MatrixXd P() const { return P_; }
 
 private:
+  // Common method for updating the internal state of the Kalman filter after
+  // analyzing a measurement.
+  void UpdateImpl(const Eigen::VectorXd& y, const Eigen::MatrixXd& R,
+                  const Eigen::MatrixXd& H);
+
   // state vector
   Eigen::VectorXd x_;
 
