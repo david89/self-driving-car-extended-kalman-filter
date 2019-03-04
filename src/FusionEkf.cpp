@@ -49,18 +49,14 @@ FusionEkf::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
     // first measurement
     VectorXd x(4);
 
+    float m1 = measurement_pack.raw_measurements(0);
+    float m2 = measurement_pack.raw_measurements(1);
     switch (measurement_pack.sensor_type) {
       case MeasurementPackage::RADAR:
-        x << measurement_pack.raw_measurements(0) * std::sin(measurement_pack.raw_measurements(1)),
-             measurement_pack.raw_measurements(0) * std::cos(measurement_pack.raw_measurements(1)),
-             0,
-             0;
+        x << m1 * std::sin(m2), m1 * std::cos(m2), 0, 0;
         break;
       case MeasurementPackage::LASER:
-        x << measurement_pack.raw_measurements(0),
-             measurement_pack.raw_measurements(1),
-             0,
-             0;
+        x << m1, m2, 0, 0;
         break;
       default:
         // TODO: maybe add a logging message as we don't know how to handle
