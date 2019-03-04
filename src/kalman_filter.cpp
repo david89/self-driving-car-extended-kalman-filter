@@ -22,12 +22,10 @@ float normalizeAngle(float angle) {
  *   VectorXd or MatrixXd objects with zeros upon creation.
  */
 
-void KalmanFilter::Init(VectorXd& x_in, MatrixXd& P_in, MatrixXd& H_in,
-                        MatrixXd& R_in) {
+void KalmanFilter::Init(VectorXd& x_in, MatrixXd& P_in, MatrixXd& H_in) {
   x_ = x_in;
   P_ = P_in;
   H_ = H_in;
-  R_ = R_in;
 }
 
 void KalmanFilter::Predict(const MatrixXd& F, const MatrixXd& Q) {
@@ -35,19 +33,19 @@ void KalmanFilter::Predict(const MatrixXd& F, const MatrixXd& Q) {
   P_ = F * P_ * F.transpose() + Q;
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
+void KalmanFilter::Update(const VectorXd &z, const MatrixXd& R) {
   MatrixXd Ht = H_.transpose();
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
 
   VectorXd y = z - H_ * x_;
-  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd S = H_ * P_ * Ht + R;
   MatrixXd K = P_ * Ht * S.inverse();
 
   x_ = x_ + (K * y);
   P_ = (I - K * H_) * P_;
 }
 
-void KalmanFilter::UpdateEkf(const VectorXd &z) {
+void KalmanFilter::UpdateEkf(const VectorXd &z, const MatrixXd& R) {
   float px = x_(0);
   float py = x_(1);
   float vx = x_(2);
@@ -68,7 +66,7 @@ void KalmanFilter::UpdateEkf(const VectorXd &z) {
   MatrixXd Hj = tools::CalculateJacobian(x_);
   MatrixXd Hjt = Hj.transpose();
   MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
-  MatrixXd S = Hj * P_ * Hjt + R_;
+  MatrixXd S = Hj * P_ * Hjt + R;
   MatrixXd K = P_ * Hjt * S.inverse();
 
   x_ = x_ + (K * y);

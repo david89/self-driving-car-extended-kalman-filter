@@ -30,10 +30,6 @@ TEST(KalmanFilter, KalmanFilterPrediction) {
   H << 1, 0, 0, 0,
        0, 1, 0, 0;
 
-  MatrixXd R(2, 2);
-  R << 0.5, 0,
-       0, 0.5;
-
   MatrixXd Q(4, 4);
   Q << 1, 1, 1, 1,
        1, 1, 1, 1,
@@ -41,7 +37,7 @@ TEST(KalmanFilter, KalmanFilterPrediction) {
        1, 1, 1, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, H, R);
+  kf.Init(x, P, H);
   kf.Predict(F, Q);
 
   // x' = F * x
@@ -84,8 +80,8 @@ TEST(KalmanFilter, KalmanFilterUpdate) {
   z << 2;
 
   KalmanFilter kf;
-  kf.Init(x, P, H, R);
-  kf.Update(z);
+  kf.Init(x, P, H);
+  kf.Update(z, R);
 
   // x' = x + K * y, where
   // K = P * transpose(H) * inverse(S),
@@ -131,8 +127,8 @@ TEST(KalmanFilter, KalmanFilterUpdateEkf) {
   z << 2.8284, 0.7853, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, H, R);
-  kf.UpdateEkf(z);
+  kf.Init(x, P, H);
+  kf.UpdateEkf(z, R);
 
   // x' = x + K * y, where
   // K = P * transpose(Hj) * inverse(S),
@@ -181,7 +177,7 @@ TEST(KalmanFilter, KalmanFilterUpdateEkfThrowWhenZeroPx) {
   z << 2.8284, 0.7853, 1;
 
   KalmanFilter kf;
-  kf.Init(x, P, H, R);
-  EXPECT_THROW(kf.UpdateEkf(z), std::invalid_argument);
+  kf.Init(x, P, H);
+  EXPECT_THROW(kf.UpdateEkf(z, R), std::invalid_argument);
 }
 }  // namespace

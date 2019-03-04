@@ -19,10 +19,9 @@ class KalmanFilter {
    * @param x_in Initial state
    * @param P_in Initial state covariance
    * @param H_in Measurement matrix
-   * @param R_in Measurement covariance matrix
    */
-  void Init(Eigen::VectorXd& x_in, Eigen::MatrixXd& P_in, Eigen::MatrixXd& H_in,
-            Eigen::MatrixXd& R_in);
+  void Init(Eigen::VectorXd& x_in, Eigen::MatrixXd& P_in,
+            Eigen::MatrixXd& H_in);
 
   /**
    * Prediction Predicts the state and the state covariance
@@ -34,13 +33,13 @@ class KalmanFilter {
    * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void Update(const Eigen::VectorXd &z);
+  void Update(const Eigen::VectorXd& z, const Eigen::MatrixXd& R);
 
   /**
    * Updates the state by using Extended Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void UpdateEkf(const Eigen::VectorXd &z);
+  void UpdateEkf(const Eigen::VectorXd& z, const Eigen::MatrixXd& R);
 
   const Eigen::VectorXd x() const { return x_; }
   const Eigen::MatrixXd P() const { return P_; }
@@ -54,9 +53,6 @@ private:
 
   // measurement matrix
   Eigen::MatrixXd H_;
-
-  // measurement covariance matrix
-  Eigen::MatrixXd R_;
 };
 
 #endif // KALMAN_FILTER_H_
