@@ -33,12 +33,12 @@ int main() {
   uWS::Hub h;
 
   // Create a Kalman Filter instance
-  FusionEKF fusionEKF;
+  FusionEkf fusionEkf;
 
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&fusionEKF,&estimations,&ground_truth]
+  h.onMessage([&fusionEkf,&estimations,&ground_truth]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -106,24 +106,12 @@ int main() {
           ground_truth.push_back(gt_values);
           
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          fusionEKF.ProcessMeasurement(meas_package);       
-
           // Push the current estimated x,y positon from the Kalman filter's 
           //   state vector
-
-          VectorXd estimate(4);
-
-          double p_x = fusionEKF.ekf_.x_(0);
-          double p_y = fusionEKF.ekf_.x_(1);
-          double v1  = fusionEKF.ekf_.x_(2);
-          double v2 = fusionEKF.ekf_.x_(3);
-
-          estimate(0) = p_x;
-          estimate(1) = p_y;
-          estimate(2) = v1;
-          estimate(3) = v2;
-        
-          estimations.push_back(estimate);
+          VectorXd estimate = fusionEkf.ProcessMeasurement(meas_package);       
+          double p_x = estimate(0);
+          double p_y = estimate(1);
+          estimations.push_back(std::move(estimate));
 
           VectorXd rmse = tools::CalculateRmse(estimations, ground_truth);
 

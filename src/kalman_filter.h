@@ -33,8 +33,8 @@ class KalmanFilter {
     */
    void UpdateEkf(const Eigen::VectorXd& z, const Eigen::MatrixXd& R);
 
-   const Eigen::VectorXd x() const { return x_; }
-   const Eigen::MatrixXd P() const { return P_; }
+   const Eigen::VectorXd& x() const { return x_; }
+   const Eigen::MatrixXd& P() const { return P_; }
 
  private:
    // Common method for updating the internal state of the Kalman filter after
